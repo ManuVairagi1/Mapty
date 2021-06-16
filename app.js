@@ -36,7 +36,23 @@ if (navigator.geolocation)
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
-      L.marker(coords).addTo(map).bindPopup("I see you roaming😎").openPopup();
+      map.on("click", function (mapEvent) {
+        const { lat, lng } = mapEvent.latlng;
+
+        L.marker([lat, lng])
+          .addTo(map)
+          .bindPopup(
+            L.popup({
+              maxWidth: 250,
+              maxHeight: 100,
+              autoClose: true,
+              closeOnClick: false,
+              className: "running-popup",
+            })
+          )
+          .setPopupContent("Hustle is the new alpha")
+          .openPopup();
+      });
     },
     function () {
       alert("cannot get the location");
