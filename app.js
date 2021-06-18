@@ -21,65 +21,117 @@ const inputDuration = document.querySelector(".form__input--duration");
 const inputCadence = document.querySelector(".form__input--cadence");
 const inputElevation = document.querySelector(".form__input--elevation");
 
-let map;
-let mapEvent;
+// class workout {
+//   constructor(coords, distance, duration) {
+//     date = new Date();
+//     id = (new Date() + "").slice(-10);
 
-if (navigator.geolocation)
-  navigator.geolocation.getCurrentPosition(
-    function (position) {
-      const { latitude } = position.coords;
-      const { longitude } = position.coords;
-      const coords = [latitude, longitude];
+//     this.coords = coords;
+//     this.distance = distance;
+//     this.duration = duration;
+//   }
+// }
+// class Running extends workout {
+//   constructor(coords, distance, duration, cadence) {
+//     super(coords, distance, duration);
+//     this.cadence = cadence;
+//     this.calcPace();
+//   }
 
-      map = L.map("map").setView(coords, 13);
+//   calcPace() {
+//     this.pace = this.duration / this.distance;
+//     return this.pace;
+//   }
+// }
 
-      L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
+// class Cycling extends workout {
+//   constructor(coords, distance, duration, elevationGain) {
+//     super(coords, distance, duration);
+//     this.elevationGain = elevationGain;
+//   }
 
-      map.on("click", function (mapE) {
-        form.classList.remove("hidden");
-        inputDistance.focus();
-        mapEvent = mapE;
-      });
-    },
-    function () {
-      alert("cannot get the location");
-    }
-  );
+//   calcSpeed() {
+//     this.speed = this.distance / (this.duration / 60);
+//     return this.speed;
+//   }
+// }
 
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
+////////////////////////////////////////////////
 
-  //clearing input fields;
-  inputDistance.value =
-    inputCadence.value =
-    inputDuration.value =
-    inputElevation.value =
-      "";
+class App {
+  //private class field
+  #map;
+  #mapEvent;
 
-  console.log(mapEvent);
-  const { lat, lng } = mapEvent.latlng;
-  L.marker([lat, lng])
-    .addTo(map)
-    .bindPopup(
-      L.popup({
-        maxWidth: 250,
-        minWidth: 100,
-        autoClose: false,
-        closeOnClick: false,
-        className: "running-popup",
-      })
-    )
-    .setPopupContent("workout")
-    .openPopup();
-});
+  constructor() {
+    console.log(this.#map);
+    this._getPosition();
 
-//changing elevation gain to cadence
+    form.addEventListener("submit", this._newWorkout.bind(this));
 
-inputType.addEventListener("change", function () {
-  inputCadence.closest(".form__row").classList.toggle("form__row--hidden");
+    //changing elevation gain to cadence
 
-  inputElevation.closest(".form__row").classList.toggle("form__row--hidden");
-});
+    inputType.addEventListener("change", this._toggleElevationField);
+  }
+
+  _getPosition() {
+    if (navigator.geolocation)
+      navigator.geolocation.getCurrentPosition(
+        this._loadMap.bind(this),
+        function () {
+          alert("cannot get the location");
+        }
+      );
+  }
+  _loadMap(position) {
+    const { latitude } = position.coords;
+    const { longitude } = position.coords;
+    const coords = [latitude, longitude];
+
+    this.#map = L.map("map").setView(coords, 13);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(this.#map);
+
+    this.#map.on("click", this._showForm.bind(this));
+  }
+  _showForm(mapE) {
+    form.classList.remove("hidden");
+    inputDistance.focus();
+    this.#mapEvent = mapE;
+  }
+  _toggleElevationField() {
+    inputCadence.closest(".form__row").classList.toggle("form__row--hidden");
+
+    inputElevation.closest(".form__row").classList.toggle("form__row--hidden");
+  }
+  _newWorkout(e) {
+    e.preventDefault();
+
+    //clearing input fields;
+    inputDistance.value =
+      inputCadence.value =
+      inputDuration.value =
+      inputElevation.value =
+        "";
+
+    const { lat, lng } = this.#mapEvent.latlng;
+    L.marker([lat, lng])
+      .addTo(this.#map)
+      .bindPopup(
+        L.popup({
+          maxWidth: 250,
+          minWidth: 100,
+          autoClose: false,
+          closeOnClick: false,
+          className: "running-popup",
+        })
+      )
+      .setPopupContent("workout")
+      .openPopup();
+  }
+}
+
+const app = new App();
