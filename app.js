@@ -21,41 +21,45 @@ const inputDuration = document.querySelector(".form__input--duration");
 const inputCadence = document.querySelector(".form__input--cadence");
 const inputElevation = document.querySelector(".form__input--elevation");
 
-// class workout {
-//   constructor(coords, distance, duration) {
-//     date = new Date();
-//     id = (new Date() + "").slice(-10);
+class workout {
+  constructor(coords, distance, duration) {
+    date = new Date();
+    id = (Date.now() + "").slice(-10);
 
-//     this.coords = coords;
-//     this.distance = distance;
-//     this.duration = duration;
-//   }
-// }
-// class Running extends workout {
-//   constructor(coords, distance, duration, cadence) {
-//     super(coords, distance, duration);
-//     this.cadence = cadence;
-//     this.calcPace();
-//   }
+    this.coords = coords; // [lat , lng]
+    this.distance = distance; //in km
+    this.duration = duration; //in min
+  }
+}
+class Running extends workout {
+  constructor(coords, distance, duration, cadence) {
+    super(coords, distance, duration);
+    this.cadence = cadence;
+    this.calcPace();
+  }
 
-//   calcPace() {
-//     this.pace = this.duration / this.distance;
-//     return this.pace;
-//   }
-// }
+  calcPace() {
+    this.pace = this.duration / this.distance;
+    return this.pace;
+  }
+}
 
-// class Cycling extends workout {
-//   constructor(coords, distance, duration, elevationGain) {
-//     super(coords, distance, duration);
-//     this.elevationGain = elevationGain;
-//   }
+class Cycling extends workout {
+  constructor(coords, distance, duration, elevationGain) {
+    super(coords, distance, duration);
+    this.elevationGain = elevationGain;
+  }
 
-//   calcSpeed() {
-//     this.speed = this.distance / (this.duration / 60);
-//     return this.speed;
-//   }
-// }
+  calcSpeed() {
+    this.speed = this.distance / (this.duration / 60);
+    return this.speed;
+  }
+}
 
+const run1 = new Running([39, 14], 3.4, 23, 192);
+const cycling1 = new Cycling([39, 14], 3.4, 23, 192);
+
+//App architecture
 ////////////////////////////////////////////////
 
 class App {
