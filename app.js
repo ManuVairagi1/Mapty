@@ -190,6 +190,9 @@ class App {
 
     //clearing input fields;
     this._hideForm();
+
+    //set local storage
+    this._setLocalStorage();
   }
 
   renderWorkoutMarker(workout) {
@@ -253,6 +256,10 @@ class App {
     }
 
     form.insertAdjacentHTML("afterend", html);
+  }
+
+  _setLocalStorage() {
+    localStorage.setItem("workouts", JSON.stringify(this.#workouts));
   }
 }
 
